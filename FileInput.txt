@@ -1,0 +1,54 @@
+package per.fjl.papercheck.file;
+
+import per.fjl.papercheck.service.impl.SimHashImpl;
+
+import java.io.*;
+
+public class FileInput {
+
+    public String readString(String FI){
+        int len=0;
+        StringBuffer str=new StringBuffer("");
+        File file = new File(FI);
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line=null;
+            while((line=bufferedReader.readLine())!=null){
+                if (len!=0){
+                    str.append("\r\n"+line);
+                }else {
+                    str.append(line);
+                }
+                len++;
+            }
+            bufferedReader.close();
+            fileInputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return str.toString();
+    }
+
+    public static void main(String[] args) {
+
+        String origin="C:\\Users\\不梦无忧\\Desktop\\新建文件夹\\新建 文本文档.txt";
+        String[] s={
+                "C:\\Users\\不梦无忧\\Desktop\\新建文件夹\\新建 文本文档 (2).txt"};
+
+        FileInput fileInput = new FileInput();
+        SimHashImpl hash1 = new SimHashImpl(fileInput.readString(origin), 64);
+        hash1.subByDistance(hash1, 3);
+        SimHashImpl hash2 = new SimHashImpl(fileInput.readString(s[0]), 64);
+        hash2.subByDistance(hash2, 3);
+        double distance = hash1.getDistance(hash1.getStrSimHash(),hash2.getStrSimHash());
+        double d=100-distance*100/128;
+        System.out.print("该文章与原文相似度为：");
+        System.out.print(String.format("%.2f",d));
+        System.out.print("%");
+    }
+
+}
